@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.second.model.User;
 import com.example.second.repository.UserRepository;
+import com.example.second.service.UserService;
 
 @RestController
 @RequestMapping("/user")
@@ -24,49 +26,46 @@ public class UserConroller {
   @Autowired
   UserRepository userRepository;
 
+  @Autowired
+  UserService userService;
+
+  @PostMapping("/register")
+  public User createUser(@RequestBody User user) {
+    return userService.registerUser(user);
+
+  }
+
+  @PutMapping("/update/{userId}")
+  public User updateUserById(@RequestBody User user, @PathVariable Long userId) throws Exception {
+
+    return userService.updateUser(user, userId);
+
+  }
+
+  @GetMapping("/find/{userEmail}")
+  public User findUserByEmail(@PathVariable String userEmail) {
+    return userService.findUserByEmail(userEmail);
+  }
+
+  @GetMapping("/follow/{user1}/to/{user2}")
+  public User followUser1ToUser2(@PathVariable Long user1, @PathVariable Long user2) throws Exception {
+    return userService.followUser(user1, user2);
+  }
+
+  @DeleteMapping("/delete/{userId}")
+  public String deleteUserById(@PathVariable Long userId) throws Exception {
+    return userService.deleteUserById(userId);
+  }
+
+  @GetMapping("/search")
+  public List<User> searchUser(@RequestParam("query") String query) { // here we use @RequestParam not @PathVariable
+    return userService.searchUser(query);
+  }
+
+  /** Testing end-point- not for any use */
   @GetMapping
   public String welcome() {
     return "welcome to my first api developement project";
-  }
-
-  @PostMapping("/create")
-  public User createUser(@RequestBody User user) {
-    User createUser = new User();
-    createUser.setFirstName(user.getFirstName());
-    createUser.setLastName(user.getLastName());
-    createUser.setEmail(user.getEmail());
-    createUser.setAge(user.getAge());
-    User newUser = userRepository.save(createUser);
-    return newUser;
-  }
-
-  @PutMapping("/update/{id}")
-  public User updateUser(@RequestBody User user, @PathVariable Long id) throws Exception {
-    Optional<User> searchUser = userRepository.findById(id);
-    if (searchUser.isEmpty()) {
-      throw new Exception("user not found with this Id" + id);
-    }
-    User oldUser = searchUser.get();
-    if (user.getFirstName() != null) {
-      oldUser.setFirstName(user.getFirstName());
-    }
-    if (user.getLastName() == null) {
-      oldUser.setLastName(user.getLastName());
-    }
-    User resultUser = userRepository.save(oldUser);
-    return resultUser;
-
-  }
-
-  @DeleteMapping("/delete/{id}")
-  public String deleteUser(@PathVariable Long id) throws Exception {
-    Optional<User> user = userRepository.findById(id);
-
-    if (user.isEmpty())
-      throw new Exception("user is not found with id" + id);
-    userRepository.delete(user.get());
-    return "User successfully deleted with id - " + id;
-
   }
 
   @GetMapping("/all")
