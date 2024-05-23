@@ -2,6 +2,7 @@ package com.example.second.service;
 
 import java.util.List;
 
+import com.example.second.model.Post;
 import com.example.second.model.User;
 
 public interface UserService {
@@ -18,5 +19,9 @@ public interface UserService {
   public List<User> searchUser(String query);
 
   public String deleteUserById(Long userId);
+
+  public Post savePost(Long postId, Long userId) throws Exception;
+
+  public List<User> getUserAll();
 
 }

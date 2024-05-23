@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.second.model.Post;
 import com.example.second.model.User;
 import com.example.second.repository.UserRepository;
 
@@ -14,6 +15,9 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  PostService postService;
 
   @Override
   public User registerUser(User user) {
@@ -105,6 +109,28 @@ public class UserServiceImpl implements UserService {
     userRepository.deleteById(userId);
 
     return "user deleted successfully with id- " + userId;
+  }
+
+  @Override
+  public Post savePost(Long postId, Long userId) throws Exception {
+    Post post = postService.findPostById(postId);
+    User user = findUserById(userId);
+
+    if (user.getSave().contains(post)) {
+      user.getSave().remove(post);
+    } else {
+      user.getSave().add(post);
+
+    }
+    userRepository.save(user);
+    return post;
+
+  }
+
+  @Override
+  public List<User> getUserAll() {
+    List<User> user = userRepository.findAll();
+    return user;
   }
 
 }

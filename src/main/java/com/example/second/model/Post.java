@@ -1,5 +1,6 @@
 package com.example.second.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,19 +18,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
-  private String firstName;
-  private String lastName;
-  private String email;
-  private String password;
-  private List<Long> followers = new ArrayList<>();
-  private List<Long> followings = new ArrayList<>();
+  private String description;
+  private String image;
+  private String video;
 
-  @ManyToMany
-  private List<Post> save = new ArrayList<>();
+  @ManyToOne // one user can create many post ex - user=> one , Post => many
+  private User user;
+
+  private LocalDateTime createdAt;
+  @OneToMany
+  private List<User> like = new ArrayList<>();
 
 }
